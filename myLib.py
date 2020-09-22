@@ -186,9 +186,9 @@ def featSelCross(kf10,trainDf,features,x_testsd_df,numerical_features,categorica
         x_testcross_mi_new_cat = x_testcross_mi_new.loc[:,sel_ca_aftermi]
         
         #numerical features selection
-        x_traincross_mi_new_num = x_trainsd_mi_new.loc[:,sel_nu_aftermi]
-        x_valcross_mi_new_num = x_valsd_mi_new.loc[:,sel_nu_aftermi]
-        x_testcross_mi_new_num = x_testsd_mi_new.loc[:,sel_nu_aftermi]
+        x_traincross_mi_new_num = x_traincross_mi_new.loc[:,sel_nu_aftermi]
+        x_valcross_mi_new_num = x_valsd_cross_new.loc[:,sel_nu_aftermi]
+        x_testcross_mi_new_num = x_testsd_cross_new.loc[:,sel_nu_aftermi]
 
 
         if (len(x_traincross_mi_new_cat.columns)!=0):
