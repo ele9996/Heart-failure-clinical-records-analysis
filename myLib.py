@@ -960,5 +960,5 @@ def RF_KFoldSmote(kf10,cross_train_dataset,selected_feat,x_test_classifier_cross
 
   plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
 
-def get_concTabValues(acc_original,acc_smote,f1_original,f1_smote,f1_original_cv,f1_smote_cv,acc_original_cv,acc_smote_cv):
+def get_concTabValues():
     return acc_original,acc_smote,f1_original,f1_smote,f1_original_cv,f1_smote_cv,acc_original_cv,acc_smote_cv
