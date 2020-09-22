@@ -133,6 +133,85 @@ def plot_Conf_Matrix(classifier,X_te,y_te):
   print(title)
   plt.show()
 
+
+def featSelCross(kf10,trinDf,features,x_testsd_df,numerical_features,categorical_features):
+
+  fold=0
+
+  voted_feat=[]
+
+  for train_index, test_index in kf10.split(trainDf):
+        X_train = trainDf.iloc[train_index].loc[:, features]
+        X_val = trainDf.iloc[test_index][features]
+        y_train = trainDf.iloc[train_index].loc[:,'DEATH_EVENT']
+        y_val = trainDf.loc[test_index]['DEATH_EVENT']
+        
+        #apply chi for categorical features and mi for all
+      
+        
+
+      
+        
+        #apply mi for all features
+        mi = SelectKBest(mutual_info_classif, k=8)
+        mi.fit( X_train, y_train)
+        cols = mi.get_support(indices=True)
+        
+        
+        
+        x_traincross_mi_new = X_train.iloc[:,cols]
+        x_valcross_mi_new = X_val.iloc[:,cols]
+        x_testcross_mi_new = x_testsd_df.iloc[:,cols]
+
+        sele_col=x_testcross_mi_new.columns.tolist()
+        
+        sel_nu_aftermi=[]
+        sel_ca_aftermi=[]
+
+        for selc in sele_col: 
+          for cat in categorical_features:
+            if (selc==cat):
+              sel_ca_aftermi.append(selc)
+
+        for seln in sel_col: 
+          for num in numerical_features:
+            if (seln==num):
+              sel_nu_aftermi.append(seln)
+
+        
+
+        #Categorical features selection
+        x_traincross_mi_new_cat = x_traincross_mi_new.loc[:,sel_ca_aftermi]
+        x_valcross_mi_new_cat = x_valcross_mi_new.loc[:,sel_ca_aftermi]
+        x_testcross_mi_new_cat = x_testcross_mi_new.loc[:,sel_ca_aftermi]
+        
+        #numerical features selection
+        x_traincross_mi_new_num = x_trainsd_mi_new.loc[:,sel_nu_aftermi]
+        x_valcross_mi_new_num = x_valsd_mi_new.loc[:,sel_nu_aftermi]
+        x_testcross_mi_new_num = x_testsd_mi_new.loc[:,sel_nu_aftermi]
+
+
+        if (len(x_traincross_mi_new_cat.columns)!=0):
+          chi = SelectKBest(chi2, k=1)
+          chi.fit(x_traincross_mi_new_cat,y_train)
+          cols = chi.get_support(indices=True)
+          selected_catcolumns = x_traincross_mi_new_cat.iloc[:,cols].columns.tolist()
+          selected_columns= sel_nu_aftermi + selected_catcolumns
+
+      
+        selected_columns= sele_col
+        
+        
+        myLib.plot_selFeat(selected_columns, features )
+        
+        
+
+
+        voted_feat= voted_feat + selected_columns
+        
+        
+        fold=fold+1
+
 def LL_Original(x_trainstd_fs,y_train_noPca,x_valstd_fs,y_val_noPca,x_teststd_fs,y_test_noPca):
   clf = LogisticRegression(random_state=0).fit(x_trainstd_fs,y_train_noPca.ravel())
   y_p_LR=clf.predict(x_valstd_fs)
