@@ -27,6 +27,45 @@ def SMOTE_100(X):
             k = k + 1
     return new 
   
+def plot_selFeat(selectFeat, allFeat ):
+  #1 --> true
+  #0 --> false
+
+
+  d = {} 
+  
+  # iterating through the elements of list 
+  for i in allFeat: 
+    d[i] = None
+    
+  
+  for feat, val in d.items():
+    d[feat]=0
+    for f in selectFeat:
+      if (feat==f):
+        
+        d[feat]=1
+        break
+        
+    
+    
+
+  
+
+  data_items = d.items()
+  data_list = list(data_items)
+
+  
+
+  col= ["features","taken"]
+
+  seldf = pd.DataFrame(data=data_list, columns=col)
+  
+  
+  plot=sns.catplot(x="taken",y="features", kind="bar", data =seldf)
+
+  return plot
+
   
 
  
