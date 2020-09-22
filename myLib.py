@@ -199,7 +199,7 @@ def LL_smoteOnly(y_train_noPca,x_trainstd_fs,x_teststd_fs,y_test_noPca,x_valstd_
   plot_Conf_Matrix(clf,x_teststd_fs,y_test_noPca.ravel())
 
 
-def LL_KfoldOnly(kf10,cross_train_dataset,x_test_classifier_cross,y_test_noPca):
+def LL_KfoldOnly(kf10,cross_train_dataset,x_test_classifier_cross,y_test_noPca,selected_feat):
   fold = 0
   acc_array_LR=[0,0,0,0,0,0,0,0,0,0]
   for train_index, test_index in kf10.split(cross_train_dataset):
@@ -231,7 +231,7 @@ def LL_KfoldOnly(kf10,cross_train_dataset,x_test_classifier_cross,y_test_noPca):
 
   plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
 
-def LL_KfoldSmote(kf10,cross_train_dataset,x_test_classifier_cross,y_test_noPca):
+def LL_KfoldSmote(kf10,cross_train_dataset,x_test_classifier_cross,y_test_noPca,selected_feat):
 
   fold = 0
   acc_array_LR=[0,0,0,0,0,0,0,0,0,0]
