@@ -19,6 +19,14 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score,recall_score, f1_score
 from numpy import mean
 
+acc_original=[0,0,0,0]
+acc_smote=[0,0,0,0]
+f1_original=[0,0,0,0]
+f1_smote=[0,0,0,0]
+f1_original_cv=[0,0,0,0]
+f1_smote_cv=[0,0,0,0]
+acc_original_cv=[0,0,0,0]
+acc_smote_cv=[0,0,0,0]
 
 
 def nearest_neighbour(X, x):
