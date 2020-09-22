@@ -805,7 +805,7 @@ def RBFSVM_KFoldSmote(kf10,cross_train_dataset,selected_feat,x_test_classifier_c
 
   plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
 
-def Rf_Original(x_trainstd_fs,y_train_noPca,x_valstd_fs,y_val_noPca,x_teststd_fs,y_test_noPca):
+def RF_Original(x_trainstd_fs,y_train_noPca,x_valstd_fs,y_val_noPca,x_teststd_fs,y_test_noPca):
   clf = RandomForestClassifier(max_depth=10, random_state=0).fit(x_trainstd_fs,y_train_noPca.ravel())
   y_p_RF=clf.predict(x_valstd_fs)
 
@@ -959,3 +959,6 @@ def RF_KFoldSmote(kf10,cross_train_dataset,selected_feat,x_test_classifier_cross
   f1_smote_cv[3]=f1_on_Test
 
   plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
+
+def get_concTabValues(acc_original,acc_smote,f1_original,f1_smote,f1_original_cv,f1_smote_cv,acc_original_cv,acc_smote_cv):
+    return acc_original,acc_smote,f1_original,f1_smote,f1_original_cv,f1_smote_cv,acc_original_cv,acc_smote_cv
