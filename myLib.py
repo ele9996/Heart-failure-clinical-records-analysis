@@ -173,7 +173,7 @@ def featSelCross(kf10,trainDf,features,x_testsd_df,numerical_features,categorica
             if (selc==cat):
               sel_ca_aftermi.append(selc)
 
-        for seln in sel_col: 
+        for seln in sele_col: 
           for num in numerical_features:
             if (seln==num):
               sel_nu_aftermi.append(seln)
