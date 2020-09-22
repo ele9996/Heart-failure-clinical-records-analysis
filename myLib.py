@@ -109,5 +109,17 @@ def kfoldize2(kf, rn, shift=.1):
         i += 1
     return train, test
 
+def plot_Conf_Matrix(classifier,X_te,y_te):
+ 
+  title= "Confusion matrix"
+  class_names= ["Alive","Dead"]
+  disp = plot_confusion_matrix(classifier, X_te, y_te,
+                                 display_labels=class_names,
+                                 cmap=plt.cm.Blues,
+                                 normalize="true")
+  disp.ax_.set_title(title)
+
+  print(title)
+  plt.show()
 
  
