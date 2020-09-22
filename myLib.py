@@ -28,45 +28,26 @@ def SMOTE_100(X):
     return new 
   
 def plot_selFeat(selectFeat, allFeat ):
-  #1 --> true
-  #0 --> false
-
-
-  d = {} 
-  
+  d = {}
   # iterating through the elements of list 
   for i in allFeat: 
     d[i] = None
     
-  
   for feat, val in d.items():
     d[feat]=0
     for f in selectFeat:
       if (feat==f):
-        
         d[feat]=1
         break
         
-    
-    
-
-  
-
   data_items = d.items()
   data_list = list(data_items)
-
-  
-
   col= ["features","taken"]
-
   seldf = pd.DataFrame(data=data_list, columns=col)
-  
-  
   plot=sns.catplot(x="taken",y="features", kind="bar", data =seldf)
-
   return plot
 
-  #Useful function for k-fold definition
+#Useful function for k-fold definition
 def pr_N_mostFrequentfeat(arr, n, k): 
     sel_feat=[]
     um = {} 
