@@ -282,3 +282,270 @@ def LL_KfoldSmote(kf10,cross_train_dataset,x_test_classifier_cross,y_test_noPca,
 
   plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
 
+def LSVM_Original(x_trainstd_fs,y_train_noPca,x_valstd_fs,y_val_noPca,x_teststd_fs,y_test_noPca):
+
+  C_best=0
+  acc_best=0
+
+  for C in [0.001, 0.01, 0.1, 1, 10, 100,1000]:
+    
+    print("analyzing C={}".format(C))
+    
+    
+    
+    clf=svm.SVC(kernel='linear', C=C)
+    clf.fit(x_trainstd_fs,y_train_noPca.ravel()) #fit is used to train your pattern with some training data
+
+    #evaluate the method on the validation set 
+
+    y_p_SVM=clf.predict(x_valstd_fs)
+    accuracy= accuracy_score(y_val_noPca,y_p_SVM)
+    
+      
+    #get the mean of the accuracies for each fold
+    print("accuracy of the model:",accuracy)
+    
+
+    #searching for the best hyperparameter in the fold
+    if (accuracy>acc_best):
+      C_best=C
+      acc_best=accuracy
+      bestModel=clf
+
+
+  print("\n")
+  print("Best hyperparameter for the model is C={}".format(C_best)) 
+
+  #Testing the model on the test set with the best hyperparameters
+  print("Testing the model on the test set with the best hyperparameter")
+  y_onTest_SVM=bestModel.predict(x_teststd_fs)
+
+  acc_on_Test= accuracy_score(y_test_noPca,y_onTest_SVM)
+  precision_on_Test = precision_score(y_test_noPca, y_onTest_SVM, average='macro')
+  recall_on_Test=recall_score(y_test_noPca, y_onTest_SVM, average='macro')
+  f1_on_Test=f1_score(y_test_noPca, y_onTest_SVM, average='macro')
+
+
+
+
+  print("Accuracy on test set={}".format(acc_on_Test))
+  print("Precision on test set={}".format(precision_on_Test))
+  print("Recall on test set={}".format(recall_on_Test)) 
+  print("F1 score on test set={}".format(f1_on_Test))
+
+  acc_original[0]=acc_on_Test
+  f1_original[0]=f1_on_Test
+
+
+  plot_Conf_Matrix(clf,x_teststd_fs,y_test_noPca.ravel())
+
+def LSVM_SmoteOnly(x_trainstd_fs,y_train_noPca,x_valstd_fs,y_val_noPca,x_teststd_fs,y_test_noPca):
+
+  C_best=0
+  acc_best=0
+
+  for C in [0.001, 0.01, 0.1, 1, 10, 100,1000]:
+    
+    print("analyzing C={}".format(C))
+    
+    
+
+    #apply smote
+    unique, counts = np.unique(y_train_noPca, return_counts=True)
+    minority_shape = dict(zip(unique, counts))[1]
+    x1 = np.ones((minority_shape, x_trainstd_fs.shape[1]))
+    k=0
+    for i in range(0,x_trainstd_fs.shape[0]):
+        
+        if y_train_noPca[i] == 1:
+            
+            x1[k] = x_trainstd_fs[i]
+            k = k + 1
+    sampled_instances = SMOTE_100(x1)
+    X_f = np.concatenate((x_trainstd_fs,sampled_instances), axis = 0)
+    y_sampled_instances = np.ones(minority_shape)
+    
+    y_f = np.concatenate((y_train_noPca.ravel(),y_sampled_instances), axis=0)
+    #train the data on the training set
+    clf=svm.SVC(kernel='linear', C=C)
+    clf.fit(X_f,y_f) #fit is used to train your pattern with some training data
+
+    #evaluate the method on the validation set 
+
+    y_p_SVM=clf.predict(x_valstd_fs)
+    acc= accuracy_score(y_val_noPca,y_p_SVM)
+    
+    
+    print("total accuracy of the model is:",acc)
+    
+
+    #searching for the best hyperparameter in the fold
+    if (acc>acc_best):
+      C_best=C
+      acc_best=acc
+      bestModel=clf
+
+
+  print("\n")
+  print("Best hyperparameter for the model is C={}".format(C_best)) 
+
+  #Testing the model on the test set with the best hyperparameters
+  print("Testing the model on the test set with the best hyperparameter")
+  y_onTest_SVM=bestModel.predict(x_teststd_fs)
+
+  acc_on_Test= accuracy_score(y_test_noPca,y_onTest_SVM)
+  precision_on_Test = precision_score(y_test_noPca, y_onTest_SVM, average='macro')
+  recall_on_Test=recall_score(y_test_noPca, y_onTest_SVM, average='macro')
+  f1_on_Test=f1_score(y_test_noPca, y_onTest_SVM, average='macro')
+  print("Accuracy on test set with smote={}".format(acc_on_Test))
+  print("Precision on test set with smote={}".format(precision_on_Test))
+  print("Recall on test set with smote={}".format(recall_on_Test)) 
+  print("F1 score on test set with smote={}".format(f1_on_Test))
+  acc_smote[0]=acc_on_Test
+  f1_smote[0]=f1_on_Test
+
+
+  plot_Conf_Matrix(clf,x_teststd_fs,y_test_noPca.ravel())
+
+def LSVM_KFoldOnly(kf10,cross_train_dataset,selected_feat,x_test_classifier_cross,y_test_noPca):
+  C_best=0
+  acc_best=0
+
+  for C in [0.001, 0.01, 0.1, 1, 10, 100,1000]:
+    
+    print("analyzing C={}".format(C))
+    
+    fold = 0
+    acc_array_SVM=[0,0,0,0,0,0,0,0,0,0]
+    for train_index, test_index in kf10.split(cross_train_dataset):
+        X_train = cross_train_dataset.iloc[train_index].loc[:, selected_feat]
+        X_val = cross_train_dataset.iloc[test_index][selected_feat]
+        y_train =cross_train_dataset.iloc[train_index].loc[:,'DEATH_EVENT']
+        y_val = cross_train_dataset.loc[test_index]['DEATH_EVENT']
+
+        #linear svm application 
+        
+        
+
+        #print("Analyzing fold {} ...".format(fold))
+
+      
+        #train the data on the training set
+        clf=svm.SVC(kernel='linear', C=C)
+        clf.fit(X_train,y_train) #fit is used to train your pattern with some training data
+      
+        #evaluate the method on the validation set 
+    
+        y_p_SVM=clf.predict(X_val)
+        acc_array_SVM[fold]= accuracy_score(y_val,y_p_SVM)
+        fold=fold+1
+      
+    #get the mean of the accuracies for each C
+    print("total accuracy of the model after Cross Validation is:",mean(acc_array_SVM) * 100)
+    
+
+    #searching for the best hyperparameter
+    if (mean(acc_array_SVM)>acc_best):
+      C_best=C
+      acc_best=mean(acc_array_SVM)
+      bestModel=clf
+
+
+  print("\n")
+  print("Best hyperparameter for the model is C={}".format(C_best)) 
+
+  #Testing the model on the test set with the best hyperparameters
+  print("Testing the model on the test set with the best hyperparameter")
+  y_onTest_SVM=bestModel.predict(x_test_classifier_cross)
+
+  acc_on_Test= accuracy_score(y_test_noPca,y_onTest_SVM)
+  precision_on_Test = precision_score(y_test_noPca, y_onTest_SVM, average='macro')
+  recall_on_Test=recall_score(y_test_noPca, y_onTest_SVM, average='macro')
+  f1_on_Test=f1_score(y_test_noPca, y_onTest_SVM, average='macro')
+  print("Accuracy on test set={}".format(acc_on_Test))
+  print("Precision on test set={}".format(precision_on_Test))
+  print("Recall on test set={}".format(recall_on_Test)) 
+  print("F1 score on test set={}".format(f1_on_Test))
+
+  acc_original_cv[0]=acc_on_Test
+  f1_original_cv[0]=f1_on_Test
+
+
+  plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
+
+def LSVM_KFoldSmote(kf10,cross_train_dataset,selected_feat,x_test_classifier_cross,y_test_noPca):
+
+  C_best=0
+  acc_best=0
+
+  for C in [0.001, 0.01, 0.1, 1, 10, 100,1000]:
+    
+    print("analyzing C={}".format(C))
+    
+    fold = 0
+    acc_array_SVM=[0,0,0,0,0,0,0,0,0,0]
+    for train_index, test_index in kf10.split(cross_train_dataset):
+        X_train = cross_train_dataset.iloc[train_index].loc[:, selected_feat].values
+        X_val = cross_train_dataset.iloc[test_index][selected_feat].values
+        y_train = cross_train_dataset.iloc[train_index].loc[:,'DEATH_EVENT'].values
+        y_val =cross_train_dataset.loc[test_index]['DEATH_EVENT'].values
+
+        #apply smote
+        unique, counts = np.unique(y_train, return_counts=True)
+        minority_shape = dict(zip(unique, counts))[1]
+        x1 = np.ones((minority_shape, X_train.shape[1]))
+        k=0
+        for i in range(0,X_train.shape[0]):
+            
+            if y_train[i] == 1:
+                
+                x1[k] = X_train[i]
+                k = k + 1
+        sampled_instances = SMOTE_100(x1)
+        
+        X_f = np.concatenate((X_train,sampled_instances), axis = 0)
+        y_sampled_instances = np.ones(minority_shape)
+        
+        y_f = np.concatenate((y_train,y_sampled_instances), axis=0)
+        #train the data on the training set
+        clf=svm.SVC(kernel='linear', C=C)
+        clf.fit(X_f,y_f) #fit is used to train your pattern with some training data
+      
+        #evaluate the method on the validation set 
+    
+        y_p_SVM=clf.predict(X_val)
+        acc_array_SVM[fold]= accuracy_score(y_val,y_p_SVM)
+        fold=fold+1
+      
+    #get the mean of the accuracies for each fold
+    print("total accuracy of the model after Cross Validation is:",mean(acc_array_SVM) * 100)
+    
+
+    #searching for the best hyperparameter in the fold
+    if (mean(acc_array_SVM)>acc_best):
+      C_best=C
+      acc_best=mean(acc_array_SVM)
+      bestModel=clf
+
+
+  print("\n")
+  print("Best hyperparameter for the model is C={}".format(C_best)) 
+
+  #Testing the model on the test set with the best hyperparameters
+  print("Testing the model on the test set with the best hyperparameter")
+  y_onTest_SVM=bestModel.predict(x_test_classifier_cross)
+
+  acc_on_Test= accuracy_score(y_test_noPca,y_onTest_SVM)
+  precision_on_Test = precision_score(y_test_noPca, y_onTest_SVM, average='macro')
+  recall_on_Test=recall_score(y_test_noPca, y_onTest_SVM, average='macro')
+  f1_on_Test=f1_score(y_test_noPca, y_onTest_SVM, average='macro')
+  print("Accuracy on test set with smote={}".format(acc_on_Test))
+  print("Precision on test set with smote={}".format(precision_on_Test))
+  print("Recall on test set with smote={}".format(recall_on_Test)) 
+  print("F1 score on test set with smote={}".format(f1_on_Test))
+
+  acc_smote_cv[0]=acc_on_Test
+  f1_smote_cv[0]=f1_on_Test
+
+  plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
+    
