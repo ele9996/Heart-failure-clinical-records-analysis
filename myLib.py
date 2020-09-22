@@ -66,6 +66,48 @@ def plot_selFeat(selectFeat, allFeat ):
 
   return plot
 
-  
+  #Useful function for k-fold definition
+def pr_N_mostFrequentfeat(arr, n, k): 
+    sel_feat=[]
+    um = {} 
+    for i in range(n): 
+        if arr[i] in um: 
+            um[arr[i]] += 1
+        else: 
+            um[arr[i]] = 1
+    a = [0] * (len(um)) 
+    j = 0
+    for i in um: 
+        a[j] = [i, um[i]] 
+        j += 1
+    a = sorted(a, key = lambda x : x[0], 
+                         reverse = True) 
+    a = sorted(a, key = lambda x : x[1],  
+                         reverse = True) 
+                           
+    # display the top k numbers  
+    
+    for i in range(k): 
+        #print(a[i][0], end = " ")
+        sel_feat.append(a[i][0])
+    
+    
+    return sel_feat
+
+def kfoldize2(kf, rn, shift=.1):
+    train = pd.DataFrame()
+    test = pd.DataFrame()
+    i = 1
+    for train_index, test_index in kf.split(rn):
+        train_df = pd.DataFrame(np.take(rn, train_index), columns=["x"])
+        train_df["val"] = i - shift
+        train = train.append(train_df)
+
+        test_df = pd.DataFrame(np.take(rn, test_index), columns=["x"])
+        test_df["val"] = i + shift
+        test = test.append(test_df)
+        i += 1
+    return train, test
+
 
  
