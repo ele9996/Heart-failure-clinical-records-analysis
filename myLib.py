@@ -134,7 +134,7 @@ def plot_Conf_Matrix(classifier,X_te,y_te):
   plt.show()
 
 
-def featSelCross(kf10,trinDf,features,x_testsd_df,numerical_features,categorical_features):
+def featSelCross(kf10,trainDf,features,x_testsd_df,numerical_features,categorical_features):
 
   fold=0
 
