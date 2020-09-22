@@ -1,3 +1,25 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import random as rand
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import plot_confusion_matrix
+from sklearn.model_selection import train_test_split
+from sklearn.decomposition import PCA
+from sklearn.model_selection import KFold
+import plotly.express as px
+from scipy.special import expit
+from sklearn import svm
+from math import sqrt
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2,mutual_info_classif
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, precision_score,recall_score, f1_score
+from numpy import mean
+
+
 
 def nearest_neighbour(X, x):
     euclidean = np.ones(X.shape[0]-1)
