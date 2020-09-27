@@ -731,6 +731,9 @@ def RBFSVM_KFoldOnly(kf10,cross_train_dataset,selected_feat,x_test_classifier_cr
   acc_original_cv[1]=acc_on_Test
   f1_original_cv[1]=f1_on_Test
 
+  plot_Conf_Matrix(clf,x_test_classifier_cross,y_test_noPca.ravel())
+
+
 def RBFSVM_KFoldSmote(kf10,cross_train_dataset,selected_feat,x_test_classifier_cross,y_test_noPca):
   C_best=0
   acc_best=0
